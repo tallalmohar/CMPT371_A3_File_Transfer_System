@@ -40,7 +40,7 @@ As required by the project specifications, we have identified and handled (or de
 
 ## **3\. Video Demo**
 
-Our 2-minute video demonstration covering server startup, client connection, file upload, file download, listing files, and process termination can be accessed below:  
+Our 2-minute video demonstration covering server startup, client connection, file upload, file download, listing files, and process termination can be accessed below (requires download as the mp4 is uploaded to the repo directly):  
 [**▶️ Link to demo video mp4**](./a3_videodemo.mp4)
 
 ## **4\. Prerequisites (Fresh Environment)**
