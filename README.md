@@ -3,14 +3,14 @@
 **Course:** CMPT 371 \- Data Communications & Networking  
 **Instructor:** Mirza Zaeem Baig  
 **Semester:** Spring 2026  
-<span style="color: purple;">***RUBRIC NOTE: As per submission guidelines, only one group member will submit the link to this repository on Canvas.***</span>
+<span style="color: purple;">**_RUBRIC NOTE: As per submission guidelines, only one group member will submit the link to this repository on Canvas._**</span>
 
 ## **Group Members**
 
-| Name | Student ID | Email |
-| :---- | :---- | :---- |
-| Name 1 | 301465076 | tma79@sfu.ca |
-| Name 2 | 30XXXXXXX | name2@sfu.ca |
+| Name   | Student ID | Email        |
+| :----- | :--------- | :----------- |
+| Name 1 | 301465076  | tma79@sfu.ca |
+| Name 2 | 301452022  | vwl29@sfu.ca |
 
 ## **1\. Project Overview & Description**
 
@@ -20,27 +20,27 @@ This project is a TCP-based File Transfer System built using Python's Socket API
 
 As required by the project specifications, we have identified and handled (or defined) the following limitations and potential issues within our application scope:
 
-* **Handling Multiple Clients Concurrently:**
-  * <span style="color: green;">*Solution:*</span> We utilized Python's `threading` module. Each client connection is handed off to a dedicated daemon thread (`handle_client`), allowing the main server loop to continue accepting new connections without blocking.
-  * <span style="color: red;">*Limitation:*</span> Thread creation is bounded by system resources. A production system would use a thread pool (`concurrent.futures.ThreadPoolExecutor`) or async I/O (`asyncio`) to scale to thousands of simultaneous connections.
+- **Handling Multiple Clients Concurrently:**
+  - <span style="color: green;">_Solution:_</span> We utilized Python's `threading` module. Each client connection is handed off to a dedicated daemon thread (`handle_client`), allowing the main server loop to continue accepting new connections without blocking.
+  - <span style="color: red;">_Limitation:_</span> Thread creation is bounded by system resources. A production system would use a thread pool (`concurrent.futures.ThreadPoolExecutor`) or async I/O (`asyncio`) to scale to thousands of simultaneous connections.
 
-* **TCP Stream Buffering (Partial Reads/Writes):**
-  * <span style="color: green;">*Solution:*</span> TCP is a byte stream, not a message stream — a single `send()` may not deliver all bytes in one `recv()`. We handle this by looping on `recv()` until the expected number of bytes (specified in the file header) have been fully received before proceeding.
-  * <span style="color: red;">*Limitation:*</span> Very large files increase memory pressure on slow networks. We mitigate this with a fixed `BUFFER_SIZE = 4096` bytes for chunked transfer, but there is no explicit file size cap enforced.
+- **TCP Stream Buffering (Partial Reads/Writes):**
+  - <span style="color: green;">_Solution:_</span> TCP is a byte stream, not a message stream — a single `send()` may not deliver all bytes in one `recv()`. We handle this by looping on `recv()` until the expected number of bytes (specified in the file header) have been fully received before proceeding.
+  - <span style="color: red;">_Limitation:_</span> Very large files increase memory pressure on slow networks. We mitigate this with a fixed `BUFFER_SIZE = 4096` bytes for chunked transfer, but there is no explicit file size cap enforced.
 
-* **Client Disconnection Mid-Transfer:**
-  * <span style="color: green;">*Solution:*</span> All socket operations on the server are wrapped in `try/except` blocks catching `ConnectionResetError` and `BrokenPipeError`. If a client disconnects mid-transfer, the server logs the event, cleans up the socket, and the thread exits gracefully without crashing the server.
-  * <span style="color: red;">*Limitation:*</span> Partially uploaded files are not automatically removed from the server's storage directory. The server may be left with an incomplete file if the client drops during an upload.
+- **Client Disconnection Mid-Transfer:**
+  - <span style="color: green;">_Solution:_</span> All socket operations on the server are wrapped in `try/except` blocks catching `ConnectionResetError` and `BrokenPipeError`. If a client disconnects mid-transfer, the server logs the event, cleans up the socket, and the thread exits gracefully without crashing the server.
+  - <span style="color: red;">_Limitation:_</span> Partially uploaded files are not automatically removed from the server's storage directory. The server may be left with an incomplete file if the client drops during an upload.
 
-* **Filename Collisions:**
-  * <span style="color: red;">*Limitation:*</span> If a client uploads a file with the same name as an existing file on the server, the existing file is silently overwritten. There is no versioning or conflict resolution mechanism in this implementation.
+- **Filename Collisions:**
+  - <span style="color: red;">_Limitation:_</span> If a client uploads a file with the same name as an existing file on the server, the existing file is silently overwritten. There is no versioning or conflict resolution mechanism in this implementation.
 
-* **Security:**
-  * <span style="color: red;">*Limitation:*</span> There is no authentication, authorization, or encryption. Any client that can reach the server's IP and port can upload or download any file. This application is intended for trusted local network use only.
+- **Security:**
+  - <span style="color: red;">_Limitation:_</span> There is no authentication, authorization, or encryption. Any client that can reach the server's IP and port can upload or download any file. This application is intended for trusted local network use only.
 
 ## **3\. Video Demo**
 
-<span style="color: purple;">***RUBRIC NOTE: Include a clickable link.***</span>  
+<span style="color: purple;">**_RUBRIC NOTE: Include a clickable link._**</span>  
 Our 2-minute video demonstration covering server startup, client connection, file upload, file download, listing files, and process termination can be viewed below:  
 [**▶️ Watch Project Demo**](https://your-video-link-here)
 
@@ -48,15 +48,15 @@ Our 2-minute video demonstration covering server startup, client connection, fil
 
 To run this project, you need:
 
-* **Python 3.7** or higher.
-* No external pip installations are required (uses standard `socket`, `threading`, `os`, `sys` libraries).
-* (Optional) VS Code or any terminal emulator.
+- **Python 3.7** or higher.
+- No external pip installations are required (uses standard `socket`, `threading`, `os`, `sys` libraries).
+- (Optional) VS Code or any terminal emulator.
 
-<span style="color: purple;">***RUBRIC NOTE: No external libraries are required. A `requirements.txt` is included but contains no installable packages — the entire project runs on Python's standard library.***</span>
+<span style="color: purple;">**_RUBRIC NOTE: No external libraries are required. A `requirements.txt` is included but contains no installable packages — the entire project runs on Python's standard library._**</span>
 
 ## **5\. Step-by-Step Run Guide**
 
-<span style="color: purple;">***RUBRIC NOTE: The grader must be able to copy-paste these commands.***</span>
+<span style="color: purple;">**_RUBRIC NOTE: The grader must be able to copy-paste these commands._**</span>
 
 ### **Step 1: Clone the Repository**
 
@@ -142,42 +142,42 @@ Open additional terminal windows and run `python client/client.py` in each. The 
 
 We designed a simple text-based application-layer protocol over TCP:
 
-* **Command Format:** Commands are UTF-8 strings sent as a single newline-terminated line.
-* **Upload Phase:**
-  * Client sends: `UPLOAD <filename> <filesize>\n`
-  * Server responds: `OK ready\n`
-  * Client sends: raw file bytes (`filesize` bytes total, chunked at 4096 bytes)
-  * Server responds: `OK <filename> received\n`
-* **Download Phase:**
-  * Client sends: `DOWNLOAD <filename>\n`
-  * Server responds: `FILEDATA <filename> <filesize>\n`
-  * Server sends: raw file bytes (`filesize` bytes total, chunked at 4096 bytes)
-* **List Phase:**
-  * Client sends: `LIST\n`
-  * Server responds: `FILELIST <count>\n` followed by `<filename> <size>\n` per file
-* **Termination:**
-  * Client sends: `QUIT\n`
-  * Server closes the connection
+- **Command Format:** Commands are UTF-8 strings sent as a single newline-terminated line.
+- **Upload Phase:**
+  - Client sends: `UPLOAD <filename> <filesize>\n`
+  - Server responds: `OK ready\n`
+  - Client sends: raw file bytes (`filesize` bytes total, chunked at 4096 bytes)
+  - Server responds: `OK <filename> received\n`
+- **Download Phase:**
+  - Client sends: `DOWNLOAD <filename>\n`
+  - Server responds: `FILEDATA <filename> <filesize>\n`
+  - Server sends: raw file bytes (`filesize` bytes total, chunked at 4096 bytes)
+- **List Phase:**
+  - Client sends: `LIST\n`
+  - Server responds: `FILELIST <count>\n` followed by `<filename> <size>\n` per file
+- **Termination:**
+  - Client sends: `QUIT\n`
+  - Server closes the connection
 
 ## **7\. Academic Integrity & References**
 
-<span style="color: purple;">***RUBRIC NOTE: List all references used and help you got.***</span>
+<span style="color: purple;">**_RUBRIC NOTE: List all references used and help you got._**</span>
 
-* **Code Origin:**
-  * The overall socket server/client structure was written by the group based on the course tutorials and lecture material. The chunked file transfer loop, `SO_REUSEADDR` socket option, and `os.path.basename` path sanitization were adapted from the references listed below. All protocol design, threading logic, and command handling were written by us.
+- **Code Origin:**
+  - The overall socket server/client structure was written by the group based on the course tutorials and lecture material. The chunked file transfer loop, `SO_REUSEADDR` socket option, and `os.path.basename` path sanitization were adapted from the references listed below. All protocol design, threading logic, and command handling were written by us.
 
-* **GenAI Usage:**
-  * Claude Code (Anthropic) was used to help scaffold the project structure, assist with implementation of `shared/protocol.py`, `server/server.py`, and `client/client.py`, and to generate and format this README.
+- **GenAI Usage:**
+  - Claude Code (Anthropic) was used to help scaffold the project structure, assist with implementation of `shared/protocol.py`, `server/server.py`, and `client/client.py`, and to generate and format this README.
 
-* **Specific code references:**
-  * `socket.sendall()` vs `socket.send()` — why we use sendall for reliable delivery:
+- **Specific code references:**
+  - `socket.sendall()` vs `socket.send()` — why we use sendall for reliable delivery:
     [Python Socket Programming HOWTO](https://docs.python.org/3/howto/sockets.html#using-a-socket)
-  * `socket.setsockopt(SO_REUSEADDR)` — lets the server restart without waiting for port release:
+  - `socket.setsockopt(SO_REUSEADDR)` — lets the server restart without waiting for port release:
     [Python `socket` module docs](https://docs.python.org/3/library/socket.html#socket.socket.setsockopt)
-  * Threading model (one thread per client, daemon threads):
+  - Threading model (one thread per client, daemon threads):
     [Real Python — Intro to Python Threading](https://realpython.com/intro-to-python-threading/)
-  * `os.path.basename()` for stripping directory components from uploaded filenames (path traversal prevention):
+  - `os.path.basename()` for stripping directory components from uploaded filenames (path traversal prevention):
     [Python `os.path` docs](https://docs.python.org/3/library/os.path.html#os.path.basename)
-  * `os.makedirs(exist_ok=True)` for auto-creating storage directories:
+  - `os.makedirs(exist_ok=True)` for auto-creating storage directories:
     [Python `os` docs](https://docs.python.org/3/library/os.html#os.makedirs)
-  * General reference throughout: [Python `socket` module documentation](https://docs.python.org/3/library/socket.html)
+  - General reference throughout: [Python `socket` module documentation](https://docs.python.org/3/library/socket.html)
