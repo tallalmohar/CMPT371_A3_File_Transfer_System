@@ -1,7 +1,6 @@
 # server/server.py
-# TCP server that listens for client connections and handles file uploads.
-# Currently supports: UPLOAD, QUIT
-# More commands (DOWNLOAD, LIST) coming in the next commit.
+# TCP server that listens for client connections and handles commands.
+# Supports: UPLOAD, DOWNLOAD, LIST, QUIT
 #
 # Ref: https://docs.python.org/3/library/socket.html
 # Ref: https://docs.python.org/3/howto/sockets.html
@@ -12,7 +11,7 @@ import sys
 
 # Add the project root so we can import shared/
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from shared.protocol import HOST, PORT, send_line, recv_line, recv_file
+from shared.protocol import HOST, PORT, send_line, recv_line, send_file, recv_file
 
 # Where uploaded files get saved
 SERVER_FILES_DIR = os.path.join(os.path.dirname(__file__), "..", "server_files")
@@ -45,6 +44,53 @@ def handle_upload(client_socket, filename, filesize):
     print(f"  [UPLOAD] Saved {safe_name} ({filesize} bytes)")
 
 
+def handle_download(client_socket, filename):
+    """
+    Handle a DOWNLOAD request.
+
+    If the file exists, send its size then stream the bytes.
+    If not, send an error line so the client knows what happened.
+    """
+    safe_name = os.path.basename(filename)
+    filepath = os.path.join(SERVER_FILES_DIR, safe_name)
+
+    if not os.path.isfile(filepath):
+        send_line(client_socket, f"ERROR file not found: {safe_name}")
+        print(f"  [DOWNLOAD] File not found: {safe_name}")
+        return
+
+    filesize = os.path.getsize(filepath)
+
+    # Tell the client what's coming: name and size
+    send_line(client_socket, f"FILEDATA {safe_name} {filesize}")
+
+    # Stream the file
+    send_file(client_socket, filepath)
+    print(f"  [DOWNLOAD] Sent {safe_name} ({filesize} bytes)")
+
+
+def handle_list(client_socket):
+    """
+    Send back a list of all files currently stored on the server.
+
+    Protocol:
+      1. Send "FILELIST <count>"
+      2. For each file send "<filename> <size>"
+    """
+    try:
+        files = os.listdir(SERVER_FILES_DIR)
+    except FileNotFoundError:
+        files = []
+
+    send_line(client_socket, f"FILELIST {len(files)}")
+    for fname in files:
+        fpath = os.path.join(SERVER_FILES_DIR, fname)
+        fsize = os.path.getsize(fpath)
+        send_line(client_socket, f"{fname} {fsize}")
+
+    print(f"  [LIST] Sent file list ({len(files)} files)")
+
+
 def handle_client(client_socket, address):
     """
     Main loop for one connected client.
@@ -66,6 +112,13 @@ def handle_client(client_socket, address):
                 filename = parts[1]
                 filesize = int(parts[2])
                 handle_upload(client_socket, filename, filesize)
+
+            elif command == "DOWNLOAD" and len(parts) == 2:
+                filename = parts[1]
+                handle_download(client_socket, filename)
+
+            elif command == "LIST":
+                handle_list(client_socket)
 
             elif command == "QUIT":
                 break
