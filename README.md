@@ -40,9 +40,8 @@ As required by the project specifications, we have identified and handled (or de
 
 ## **3\. Video Demo**
 
-<span style="color: purple;">**_RUBRIC NOTE: Include a clickable link._**</span>  
 Our 2-minute video demonstration covering server startup, client connection, file upload, file download, listing files, and process termination can be viewed below:  
-[**▶️ Watch Project Demo**](https://your-video-link-here)
+[**▶️ Watch Project Demo**](./a3_videodemo.mp4)
 
 ## **4\. Prerequisites (Fresh Environment)**
 
@@ -61,8 +60,8 @@ To run this project, you need:
 ### **Step 1: Clone the Repository**
 
 ```bash
-git clone <your-repo-url>
-cd CMPT371_A3
+git clone https://github.com/tallalmohar/CMPT371_A3_File_Transfer_System.git
+cd CMPT371_A3_File_Transfer_System
 ```
 
 ### **Step 2: Start the Server**
