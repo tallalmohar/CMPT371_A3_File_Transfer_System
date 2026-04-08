@@ -1,11 +1,7 @@
-# shared/protocol.py
+
 # Helper functions for our wire protocol, used by both server and client.
 # Centralizing these here keeps the protocol logic in one place so the
 # server and client don't drift out of sync.
-#
-# Ref: Python Socket HOWTO — https://docs.python.org/3/howto/sockets.html
-# Ref: sendall vs send — https://docs.python.org/3/library/socket.html#socket.socket.sendall
-
 import socket
 import sys
 

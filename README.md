@@ -180,4 +180,8 @@ We designed a simple text-based application-layer protocol over TCP:
     [Python `os.path` docs](https://docs.python.org/3/library/os.path.html#os.path.basename)
   - `os.makedirs(exist_ok=True)` for auto-creating storage directories:
     [Python `os` docs](https://docs.python.org/3/library/os.html#os.makedirs)
+  - `bytearray` for efficient incremental byte buffering in `recv_line()`:
+    [Python `bytearray` docs](https://docs.python.org/3/library/stdtypes.html#bytearray)
+  - Using `\r` (carriage return) to overwrite terminal lines for the download progress bar:
+    [Stack Overflow — Overwrite console output](https://stackoverflow.com/a/3160819)
   - General reference throughout: [Python `socket` module documentation](https://docs.python.org/3/library/socket.html)

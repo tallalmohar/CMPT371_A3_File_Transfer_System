@@ -1,8 +1,5 @@
-# client/client.py
 # Interactive CLI client for the file transfer system.
 # Supports: Upload, Download, List, Quit
-#
-# Ref: https://docs.python.org/3/library/socket.html
 
 import socket
 import os
@@ -138,6 +135,11 @@ def show_menu():
 
 
 def main():
+    """
+    Entry point. Opens a TCP connection to the server and runs the
+    interactive menu loop until the user quits or the connection drops.
+    """
+    # Create a TCP socket and try to connect
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((HOST, PORT))
@@ -164,8 +166,18 @@ def main():
                 break
             else:
                 print("Invalid option. Please enter 1, 2, 3, or 4.")
-    except (ConnectionResetError, BrokenPipeError):
+    except (ConnectionResetError, BrokenPipeError, ConnectionError):
+        # Server went away — could be a crash, network issue, or the
+        # server was killed. Either way, not much we can do here.
         print("Lost connection to server.")
+    except KeyboardInterrupt:
+        # User hit Ctrl+C — try to tell the server we're leaving
+        # so it doesn't think we crashed
+        try:
+            send_line(sock, "QUIT")
+        except Exception:
+            pass  # server might already be gone
+        print("\nDisconnected.")
     finally:
         sock.close()
 
