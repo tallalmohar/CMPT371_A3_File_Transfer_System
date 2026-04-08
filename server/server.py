@@ -1,24 +1,91 @@
 # server/server.py
-# Basic TCP server that listens for incoming client connections.
-# Right now it just accepts a connection, prints a message, and closes.
-# We'll add actual command handling in later commits.
+# TCP server that listens for client connections and handles file uploads.
+# Currently supports: UPLOAD, QUIT
+# More commands (DOWNLOAD, LIST) coming in the next commit.
 #
 # Ref: https://docs.python.org/3/library/socket.html
 # Ref: https://docs.python.org/3/howto/sockets.html
 
 import socket
+import os
+import sys
 
-HOST = "127.0.0.1"
-PORT = 5001
+# Add the project root so we can import shared/
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from shared.protocol import HOST, PORT, send_line, recv_line, recv_file
+
+# Where uploaded files get saved
+SERVER_FILES_DIR = os.path.join(os.path.dirname(__file__), "..", "server_files")
+
+
+def handle_upload(client_socket, filename, filesize):
+    """
+    Handle an incoming UPLOAD request.
+
+    Steps:
+      1. Sanitize the filename (strip directory parts for safety)
+      2. Tell the client we're ready
+      3. Receive the file bytes
+      4. Confirm we got it
+    """
+    # os.path.basename strips directory components so a client can't
+    # write to weird paths like "../../etc/something"
+    # Ref: https://docs.python.org/3/library/os.path.html#os.path.basename
+    safe_name = os.path.basename(filename)
+    save_path = os.path.join(SERVER_FILES_DIR, safe_name)
+
+    # Let the client know we're ready to receive
+    send_line(client_socket, "OK ready")
+
+    # Pull in the file data and write it to disk
+    recv_file(client_socket, filesize, save_path)
+
+    # Confirm receipt
+    send_line(client_socket, f"OK {safe_name} received")
+    print(f"  [UPLOAD] Saved {safe_name} ({filesize} bytes)")
+
+
+def handle_client(client_socket, address):
+    """
+    Main loop for one connected client.
+    Reads commands until QUIT or disconnect.
+    """
+    print(f"[CONNECTED] {address[0]}:{address[1]}")
+
+    try:
+        while True:
+            line = recv_line(client_socket)
+            if not line:
+                # Empty means the client closed the connection
+                break
+
+            parts = line.split()
+            command = parts[0].upper()
+
+            if command == "UPLOAD" and len(parts) == 3:
+                filename = parts[1]
+                filesize = int(parts[2])
+                handle_upload(client_socket, filename, filesize)
+
+            elif command == "QUIT":
+                break
+
+            else:
+                send_line(client_socket, f"ERROR unknown command: {line}")
+
+    except (ConnectionResetError, BrokenPipeError, ConnectionError) as e:
+        print(f"  [DISCONNECTED] {address[0]}:{address[1]} — {e}")
+    finally:
+        client_socket.close()
+        print(f"[CLOSED] {address[0]}:{address[1]}")
 
 
 def start_server():
-    # Create a TCP socket (IPv4)
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Make sure the uploads folder exists
+    # Ref: https://docs.python.org/3/library/os.html#os.makedirs
+    os.makedirs(SERVER_FILES_DIR, exist_ok=True)
 
-    # Let us reuse the port right away if we restart the server.
-    # Without this you get "Address already in use" for like a minute.
-    # Ref: https://docs.python.org/3/library/socket.html#socket.socket.setsockopt
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     server_socket.bind((HOST, PORT))
@@ -27,23 +94,9 @@ def start_server():
 
     try:
         while True:
-            # This blocks until someone connects
             client_socket, address = server_socket.accept()
-            print(f"[SERVER] Connection from {address[0]}:{address[1]}")
-
-            # For now just read whatever the client sends and print it
-            # We'll replace this with proper command handling later
-            try:
-                while True:
-                    data = client_socket.recv(4096)
-                    if not data:
-                        break
-                    print(f"[SERVER] Received: {data.decode('utf-8').strip()}")
-            except ConnectionResetError:
-                print(f"[SERVER] Client {address[0]}:{address[1]} disconnected unexpectedly")
-            finally:
-                client_socket.close()
-                print(f"[SERVER] Connection closed with {address[0]}:{address[1]}")
+            # For now handle one client at a time — threading comes later
+            handle_client(client_socket, address)
 
     except KeyboardInterrupt:
         print("\n[SERVER] Shutting down.")
