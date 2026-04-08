@@ -1,0 +1,14 @@
+# Ignore runtime directories
+server_files/
+downloads/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+
+# Claude planning docs
+.claude/
